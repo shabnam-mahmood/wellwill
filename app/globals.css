@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+body {
+  background: #ffffff;
+  color: #111111;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+/* WellWill filled CTA buttons — always white text */
+a[class*="bg-[#0866c5]"],
+a[class*="bg-[#15935e]"],
+a[class*="bg-[#0759ac]"],
+a[class*="bg-[#117c50]"],
+a[class*="bg-[#118bd0]"],
+a[class*="bg-[#1684e8]"],
+button[class*="bg-[#0866c5]"],
+button[class*="bg-[#15935e]"],
+button[class*="bg-[#0759ac]"],
+button[class*="bg-[#117c50]"],
+button[class*="bg-[#118bd0]"],
+button[class*="bg-[#1684e8]"] {
+  color: #ffffff !important;
+}
+
+/* Make text/icons inside those buttons inherit white */
+a[class*="bg-[#0866c5]"] *,
+a[class*="bg-[#15935e]"] *,
+a[class*="bg-[#0759ac]"] *,
+a[class*="bg-[#117c50]"] *,
+a[class*="bg-[#118bd0]"] *,
+a[class*="bg-[#1684e8]"] *,
+button[class*="bg-[#0866c5]"] *,
+button[class*="bg-[#15935e]"] *,
+button[class*="bg-[#0759ac]"] *,
+button[class*="bg-[#117c50]"] *,
+button[class*="bg-[#118bd0]"] *,
+button[class*="bg-[#1684e8]"] * {
+  color: #ffffff !important;
+}
