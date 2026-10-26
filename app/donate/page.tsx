@@ -1,3 +1,6 @@
+
+import { Suspense } from "react";
+
 import Header from "@/components/Header";
 import PageHero from "@/components/PageHero";
 import DonateForm from "@/components/donate/DonateForm";
@@ -11,7 +14,11 @@ export default function DonatePage() {
 
       <main>
         <PageHero title="Donate" />
-        <DonateForm />
+
+        <Suspense fallback={null}>
+          <DonateForm />
+        </Suspense>
+
         <GlobalCTA />
       </main>
 
