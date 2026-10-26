@@ -78,7 +78,7 @@ export default function Process() {
               className="mt-6 max-w-[620px] text-base leading-7 text-[#53677f] sm:text-lg"
             >
               Every WellWill water project follows a clear and responsible
-              process — from identifying a community to completing and
+              process from identifying a community to completing and
               verifying the project.
             </motion.p>
 

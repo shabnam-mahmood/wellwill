@@ -65,12 +65,12 @@ export default function MuhammadStory() {
                 </p>
 
                 <p>
-                  That idea became <strong className="font-semibold text-[#062a5e]">WellWill</strong> — built around two simple thoughts: the <strong className="font-semibold text-[#314963]">will to do good</strong> and the opportunity for people to <strong className="font-semibold text-[#314963]">live well</strong>.
+                  That idea became <strong className="font-semibold text-[#062a5e]">WellWill</strong> built around two simple thoughts: the <strong className="font-semibold text-[#314963]">will to do good</strong> and the opportunity for people to <strong className="font-semibold text-[#314963]">live well</strong>.
                   The journey begins with household water projects in Pakistan, but the vision reaches much further. Muhammad wants WellWill to grow into an initiative that supports healthier and stronger communities through water, health, education, nutrition, opportunity and other essential areas of wellbeing.
                 </p>
 
                 <p>
-                  For Muhammad, WellWill is not about one person or one project. It is about creating a platform where small, responsible actions can grow into lasting change — and where more people can become part of that journey.
+                  For Muhammad, WellWill is not about one person or one project. It is about creating a platform where small, responsible actions can grow into lasting change and where more people can become part of that journey.
                 </p>
               </div>
 

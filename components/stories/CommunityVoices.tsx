@@ -51,7 +51,7 @@ export default function CommunityVoices() {
 
           <p className="mt-6 max-w-[650px] text-[15px] leading-7 text-[#53677f]">
             WellWill stories should connect people with the real outcomes of
-            completed projects — showing the challenge, the solution, the
+            completed projects showing the challenge, the solution, the
             result and the people reached.
           </p>
 

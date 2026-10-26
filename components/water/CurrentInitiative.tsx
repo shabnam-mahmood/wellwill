@@ -34,7 +34,7 @@ export default function CurrentInitiative() {
           <div className="flex items-center gap-4">
             <span className="h-[2px] w-10 bg-[#15935e]" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.27em] text-[#60758d]">
-              Current Initiative — Pakistan
+              Current Initiative Pakistan
             </span>
           </div>
 

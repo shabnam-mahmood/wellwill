@@ -228,8 +228,8 @@ h1 {
       <div>
         <img class="logo" src="${logoUrl}" alt="WellWill" />
         <p class="eyebrow">Field Survey</p>
-        <h1>Water Supply Project — Survey Form</h1>
-        <p class="sub">منصوبہ آبی فراہمی · Survey Form — Field Data Collection</p>
+        <h1>Water Supply Project Survey Form</h1>
+        <p class="sub">منصوبہ آبی فراہمی · Survey Form Field Data Collection</p>
       </div>
       <div class="meta">
         <div class="mrow"><div class="ml">Form No.</div><div class="mv">${escapeHtml(form.formNo)}</div></div>
@@ -297,10 +297,10 @@ window.addEventListener("load", function () {
                   Field Survey
                 </p>
                 <h1 className="mt-2 font-serif text-[30px] font-semibold text-[#062a5e] sm:text-[36px]">
-                  Water Supply Project — Survey Form
+                  Water Supply Project Survey Form
                 </h1>
                 <p className="mt-2 text-sm text-[#53677f]">
-                  منصوبہ آبی فراہمی · Survey Form — Field Data Collection
+                  منصوبہ آبی فراہمی · Survey Form : Field Data Collection
                 </p>
               </div>
 

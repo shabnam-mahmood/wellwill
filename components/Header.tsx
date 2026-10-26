@@ -70,19 +70,21 @@ export default function Header() {
         >
           <Link href="/" className="relative z-[110] shrink-0">
             <div
-              className={`relative transition-all duration-500 ${
-                scrolled ? "h-[46px] w-[155px]" : "h-[54px] w-[180px]"
-              }`}
-            >
-              <Image
-                src="/images/wellwill-logo.png"
-                alt="WellWill"
-                fill
-                priority
-                className="object-contain object-left"
-                sizes="180px"
-              />
-            </div>
+  className={`relative transition-all duration-500 ${
+    scrolled
+      ? "h-[58px] w-[190px]"
+      : "h-[70px] w-[220px]"
+  }`}
+>
+  <Image
+    src="/images/wellwill-logo.png"
+    alt="WellWill"
+    fill
+    priority
+    className="object-contain object-left"
+    sizes="220px"
+  />
+</div>
           </Link>
 
           <nav className="hidden items-center gap-9 xl:flex">
@@ -107,12 +109,13 @@ export default function Header() {
               >
                 About Us
                 <span
-                  className={`text-[11px] transition-transform duration-300 ${
-                    aboutOpen ? "rotate-180" : ""
-                  }`}
-                >
-                  ▾
-                </span>
+  aria-hidden="true"
+  className={`inline-flex items-center justify-center text-[16px] leading-none transition-transform duration-300 ${
+    aboutOpen ? "rotate-180" : ""
+  }`}
+>
+  ▾
+</span>
 
                 <span
                   className={`absolute bottom-[18px] left-0 h-[2px] rounded-full bg-[#15935e] transition-all duration-300 ${

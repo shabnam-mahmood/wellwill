@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -9,8 +10,13 @@ import {
   Mail,
   MapPin,
   MessageCircle,
-  Phone,
 } from "lucide-react";
+
+const dubaiMapsUrl =
+  "https://maps.app.goo.gl/RFLUZFtpiyiDC9ch8";
+
+const pakistanMapsUrl =
+  "https://www.google.com/maps/search/?api=1&query=World+Trade+Centre+Islamabad+Pakistan";
 
 export default function ContactMain() {
   return (
@@ -36,8 +42,8 @@ export default function ContactMain() {
           </h2>
 
           <p className="mt-4 max-w-[760px] text-[15px] leading-7 text-[#53677f] sm:text-base">
-            Have a question, partnership idea or general enquiry? Fill in the
-            form below and our team will get back to you.
+            Have a question, partnership idea or general enquiry?
+            Fill in the form below and our team will get back to you.
           </p>
 
           <form className="mt-8 grid gap-5 sm:grid-cols-2">
@@ -122,74 +128,101 @@ export default function ContactMain() {
           className="grid gap-5"
         >
           {/* CONTACT OUR TEAM */}
-          <InfoCard icon={<MessageCircle size={24} strokeWidth={1.8} />}>
+          <InfoCard
+            icon={<MessageCircle size={24} strokeWidth={1.8} />}
+          >
             <h3 className="font-serif text-[26px] font-semibold text-[#062a5e]">
               Contact Our Team
             </h3>
 
-            <div className="mt-5 space-y-4">
-              <div className="flex items-start gap-3">
-                <Phone
-                  size={19}
-                  className="mt-0.5 shrink-0 text-[#0866c5]"
-                  strokeWidth={1.8}
-                />
-                <div>
-                  <p className="text-xs uppercase tracking-[0.15em] text-[#7a8c9f]">
-                    Phone
-                  </p>
-                  <p className="mt-1 text-sm font-medium text-[#40566f]">
-                    +971 50 123 4567
-                  </p>
-                </div>
-              </div>
-
+            <div className="mt-5 space-y-5">
+              {/* EMAIL */}
               <div className="flex items-start gap-3">
                 <Mail
                   size={19}
                   className="mt-0.5 shrink-0 text-[#0866c5]"
                   strokeWidth={1.8}
                 />
+
                 <div>
                   <p className="text-xs uppercase tracking-[0.15em] text-[#7a8c9f]">
                     Email
                   </p>
+
                   <a
-                    href="mailto:contact@wellwill.org"
+                    href="mailto:info@wellwill.org"
                     className="mt-1 block text-sm font-medium text-[#0866c5] transition-colors hover:text-[#0759ac]"
                   >
-                    contact@wellwill.org
+                    info@wellwill.org
                   </a>
                 </div>
               </div>
 
+              {/* DUBAI OFFICE */}
               <div className="flex items-start gap-3">
                 <MapPin
                   size={19}
                   className="mt-0.5 shrink-0 text-[#0866c5]"
                   strokeWidth={1.8}
                 />
+
                 <div>
                   <p className="text-xs uppercase tracking-[0.15em] text-[#7a8c9f]">
-                    Location
+                    Dubai Office
                   </p>
-                  <p className="mt-1 text-sm leading-6 text-[#40566f]">
-                    B2B Tower, Business Bay, Dubai, UAE
+
+                  <a
+                    href={dubaiMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 block text-sm leading-6 text-[#40566f] transition-colors hover:text-[#0866c5]"
+                  >
+                    B2B Office Tower, Office 2205,
+                    Marasi Drive Street, Business Bay,
+                    Dubai, UAE
+                  </a>
+                </div>
+              </div>
+
+              {/* PAKISTAN OFFICE */}
+              <div className="flex items-start gap-3">
+                <MapPin
+                  size={19}
+                  className="mt-0.5 shrink-0 text-[#0866c5]"
+                  strokeWidth={1.8}
+                />
+
+                <div>
+                  <p className="text-xs uppercase tracking-[0.15em] text-[#7a8c9f]">
+                    Pakistan Office
                   </p>
+
+                  <a
+                    href={pakistanMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 block text-sm leading-6 text-[#40566f] transition-colors hover:text-[#0866c5]"
+                  >
+                    Office No. 4087, 4th Floor,
+                    World Trade Centre,
+                    Islamabad, Pakistan
+                  </a>
                 </div>
               </div>
             </div>
           </InfoCard>
 
           {/* NEED WATER SUPPORT */}
-          <InfoCard icon={<Droplets size={24} strokeWidth={1.8} />}>
+          <InfoCard
+            icon={<Droplets size={24} strokeWidth={1.8} />}
+          >
             <h3 className="font-serif text-[26px] font-semibold text-[#062a5e]">
               Need Water Support?
             </h3>
 
             <p className="mt-3 max-w-[420px] text-sm leading-6 text-[#60758d]">
-              Tell us about the water needs in your community through our
-              dedicated Water Survey.
+              Tell us about the water needs in your community
+              through our dedicated Water Survey.
             </p>
 
             <Link
@@ -205,13 +238,16 @@ export default function ContactMain() {
           </InfoCard>
 
           {/* WANT TO HELP */}
-          <InfoCard icon={<HandHeart size={24} strokeWidth={1.8} />}>
+          <InfoCard
+            icon={<HandHeart size={24} strokeWidth={1.8} />}
+          >
             <h3 className="font-serif text-[26px] font-semibold text-[#062a5e]">
               Want to Help?
             </h3>
 
             <p className="mt-3 max-w-[420px] text-sm leading-6 text-[#60758d]">
-              Support WellWill through donations, partnerships or volunteering.
+              Support WellWill through donations, partnerships
+              or volunteering.
             </p>
 
             <Link
@@ -246,7 +282,9 @@ function Field({
     <label className="block">
       <span className="mb-2 block text-sm font-medium text-[#173a5e]">
         {label}{" "}
-        {required && <span className="text-[#e25555]">*</span>}
+        {required && (
+          <span className="text-[#e25555]">*</span>
+        )}
       </span>
 
       <input
@@ -272,7 +310,9 @@ function InfoCard({
         {icon}
       </div>
 
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="min-w-0 flex-1">
+        {children}
+      </div>
     </div>
   );
 }

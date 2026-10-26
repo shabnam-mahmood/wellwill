@@ -106,7 +106,7 @@ export default function Story() {
             className="mx-auto mt-6 max-w-[720px] text-[15px] leading-7 text-[#53677f] sm:text-base sm:leading-8"
           >
             WellWill began with Muhammad&apos;s simple desire to help others.
-            What started with water is growing into a wider vision — creating
+            What started with water is growing into a wider vision creating
             meaningful opportunities for people and communities to live well.
           </motion.p>
 

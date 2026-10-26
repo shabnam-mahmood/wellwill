@@ -25,7 +25,7 @@ const stories: Story[] = [
     fullText: [
       "This project began with a simple need: improving reliable water access for a household in Dera Ghazi Khan. After the need was identified, a household water pump was selected as a practical solution for the location.",
       "The pump was installed and the project was documented as completed. Having a water source closer to the household can make everyday water collection more convenient and reduce the distance a family needs to travel for routine water needs.",
-      "For WellWill, projects like this represent the first step in a wider mission — responding to practical needs with responsible, locally appropriate solutions and documenting each completed project.",
+      "For WellWill, projects like this represent the first step in a wider mission responding to practical needs with responsible, locally appropriate solutions and documenting each completed project.",
       "The beneficiary’s personal details are kept private. This story is based on WellWill’s documented completed household water-pump project record.",
     ],
   },

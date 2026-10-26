@@ -68,8 +68,7 @@ export default function Hero() {
               Our journey begins with water.
             </strong>{" "}
             WellWill is a humanitarian initiative beginning in Pakistan,
-            helping underserved families gain better access to reliable water
-            — with a vision for wellbeing that goes far beyond water.
+            helping underserved families gain better access to reliable water with a vision for wellbeing that goes far beyond water.
           </motion.p>
 
           <motion.div

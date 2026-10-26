@@ -30,7 +30,7 @@ export default function AboutStory() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.1 }} className="mt-6 max-w-[600px] space-y-4 text-[15px] leading-7 text-[#53677f] sm:text-base">
             <p>WellWill was created around a simple belief: when people have the essentials of life, they have a better opportunity to thrive.</p>
-            <p>Our journey begins by improving access to reliable water for underserved families in Pakistan — but our vision goes much further. We aim to support healthier communities through long-term initiatives in health, education, nutrition, environment, livelihood and community wellbeing.</p>
+            <p>Our journey begins by improving access to reliable water for underserved families in Pakistan but our vision goes much further. We aim to support healthier communities through long-term initiatives in health, education, nutrition, environment, livelihood and community wellbeing.</p>
           </motion.div>
 
          <motion.div
