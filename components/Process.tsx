@@ -168,48 +168,52 @@ export default function Process() {
               whileHover={{ y: -5 }}
               className="relative mx-4 -mt-24 rounded-[24px] border border-white/70 bg-white/95 p-5 shadow-[0_20px_60px_rgba(6,42,94,0.15)] backdrop-blur-md sm:mx-8 sm:p-6 lg:mx-10"
             >
-              <div className="flex items-center justify-between gap-5">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2
-                      size={16}
-                      className="shrink-0 text-[#15935e]"
-                    />
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#15935e]">
-                      Completed Water Project
-                    </p>
-                  </div>
+              
+<div className="flex items-center justify-between gap-5">
+  <div className="min-w-0">
+    <div className="flex items-center gap-2">
+      <CheckCircle2
+        size={16}
+        className="shrink-0 text-[#15935e]"
+      />
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#15935e]">
+        WW-RYK-001
+      </p>
+    </div>
 
-                  <h3 className="mt-2 font-serif text-xl font-semibold text-[#062a5e] sm:text-2xl">
-                    Household Water Pump
-                  </h3>
+    <h3 className="mt-2 font-serif text-xl font-semibold text-[#062a5e] sm:text-2xl">
+      Household Water Pump
+    </h3>
 
-                  <div className="mt-3 flex items-center gap-2 text-sm text-[#53677f]">
-                    <MapPin
-                      size={16}
-                      className="shrink-0 text-[#0866c5]"
-                    />
-                    Dera Ghazi Khan, Pakistan
-                  </div>
+    <div className="mt-3 flex items-center gap-2 text-sm text-[#53677f]">
+      <MapPin
+        size={16}
+        className="shrink-0 text-[#0866c5]"
+      />
+      <span>Rahimyar Khan, Pakistan</span>
+    </div>
 
-                  <p className="mt-3 max-w-[410px] text-sm leading-6 text-[#5e7188]">
-                    One of WellWill&apos;s completed household water pump
-                    projects, helping improve reliable water access for a local
-                    family in Dera Ghazi Khan.
-                  </p>
-                </div>
+    <p className="mt-3 max-w-[410px] text-sm leading-6 text-[#5e7188]">
+      A hand-pump water project recorded for Muhammad Akmal&apos;s
+      household of 4 family members in Rahimyar Khan, Pakistan.
+    </p>
 
-                <Link
-                  href="/projects"
-                  aria-label="View completed projects"
-                  className="group flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e9f7f0] text-[#176b4a] transition-all duration-300 hover:bg-[#2a915e] hover:text-white"
-                >
-                  <ArrowRight
-                    size={20}
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </Link>
-              </div>
+    <p className="mt-3 text-sm font-semibold text-[#15935e]">
+      Estimated Cost: AED 200
+    </p>
+  </div>
+
+  <Link
+    href="/projects"
+    aria-label="View WellWill projects"
+    className="group flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e9f7f0] text-[#176b4a] transition-all duration-300 hover:bg-[#2a915e] hover:text-white"
+  >
+    <ArrowRight
+      size={20}
+      className="transition-transform duration-300 group-hover:translate-x-1"
+    />
+  </Link>
+</div>
             </motion.div>
           </motion.div>
         </div>
