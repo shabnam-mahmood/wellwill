@@ -8,15 +8,8 @@ import {
   Droplets,
   HandHeart,
   Mail,
-  MapPin,
   MessageCircle,
 } from "lucide-react";
-
-const dubaiMapsUrl =
-  "https://maps.app.goo.gl/RFLUZFtpiyiDC9ch8";
-
-const pakistanMapsUrl =
-  "https://www.google.com/maps/search/?api=1&query=World+Trade+Centre+Islamabad+Pakistan";
 
 export default function ContactMain() {
   return (
@@ -125,7 +118,7 @@ export default function ContactMain() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7 }}
-          className="grid gap-5"
+          className="flex flex-col gap-5"
         >
           {/* CONTACT OUR TEAM */}
           <InfoCard
@@ -135,8 +128,7 @@ export default function ContactMain() {
               Contact Our Team
             </h3>
 
-            <div className="mt-5 space-y-5">
-              {/* EMAIL */}
+            <div className="mt-5">
               <div className="flex items-start gap-3">
                 <Mail
                   size={19}
@@ -154,58 +146,6 @@ export default function ContactMain() {
                     className="mt-1 block text-sm font-medium text-[#0866c5] transition-colors hover:text-[#0759ac]"
                   >
                     info@wellwill.org
-                  </a>
-                </div>
-              </div>
-
-              {/* DUBAI OFFICE */}
-              <div className="flex items-start gap-3">
-                <MapPin
-                  size={19}
-                  className="mt-0.5 shrink-0 text-[#0866c5]"
-                  strokeWidth={1.8}
-                />
-
-                <div>
-                  <p className="text-xs uppercase tracking-[0.15em] text-[#7a8c9f]">
-                    Dubai Office
-                  </p>
-
-                  <a
-                    href={dubaiMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 block text-sm leading-6 text-[#40566f] transition-colors hover:text-[#0866c5]"
-                  >
-                    B2B Office Tower, Office 2205,
-                    Marasi Drive Street, Business Bay,
-                    Dubai, UAE
-                  </a>
-                </div>
-              </div>
-
-              {/* PAKISTAN OFFICE */}
-              <div className="flex items-start gap-3">
-                <MapPin
-                  size={19}
-                  className="mt-0.5 shrink-0 text-[#0866c5]"
-                  strokeWidth={1.8}
-                />
-
-                <div>
-                  <p className="text-xs uppercase tracking-[0.15em] text-[#7a8c9f]">
-                    Pakistan Office
-                  </p>
-
-                  <a
-                    href={pakistanMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 block text-sm leading-6 text-[#40566f] transition-colors hover:text-[#0866c5]"
-                  >
-                    Office No. 4087, 4th Floor,
-                    World Trade Centre,
-                    Islamabad, Pakistan
                   </a>
                 </div>
               </div>
@@ -305,7 +245,7 @@ function InfoCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-[220px] items-start gap-5 rounded-[26px] border border-[#dce8f1] bg-white p-6 shadow-[0_10px_35px_rgba(6,42,94,0.045)] sm:p-7">
+    <div className="flex items-start gap-5 rounded-[26px] border border-[#dce8f1] bg-white p-6 shadow-[0_10px_35px_rgba(6,42,94,0.045)] sm:p-7">
       <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#eaf6ff] text-[#0866c5]">
         {icon}
       </div>

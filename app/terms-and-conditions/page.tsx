@@ -195,14 +195,7 @@ export default function TermsAndConditionsPage() {
 
           {/* MAIN CONTENT */}
           <article className="min-w-0">
-            <div className="mb-10 rounded-[18px] border-l-4 border-[#15935e] bg-[#f5faff] px-6 py-5">
-              <p className="text-sm leading-7 text-[#53677f]">
-                <strong className="text-[#062a5e]">
-                  Effective date:
-                </strong>{" "}
-                To be confirmed before publication.
-              </p>
-            </div>
+            
 
             <div className="space-y-11">
               {sections.map((section) => (

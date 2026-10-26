@@ -20,12 +20,6 @@ const supportLinks = [
   ["Need Water Support", "/water-survey"],
 ];
 
-const dubaiMapsUrl =
-  "https://maps.app.goo.gl/RFLUZFtpiyiDC9ch8";
-
-const pakistanMapsUrl =
-  "https://www.google.com/maps/search/?api=1&query=World+Trade+Centre+Islamabad+Pakistan";
-
 export default function Footer() {
   return (
     <footer className="bg-white text-[#062a5e]">
@@ -35,7 +29,7 @@ export default function Footer() {
           <Link href="/" className="inline-flex">
             <div className="relative h-[72px] w-[230px] shrink-0">
               <Image
-                src="/images/wellwill-logo.png"
+                src="/images/wellwill--logo.png"
                 alt="WellWill"
                 fill
                 className="object-contain object-left"
@@ -58,42 +52,6 @@ export default function Footer() {
               className="text-sm font-medium text-[#0866c5] transition-colors hover:text-[#15935e]"
             >
               info@wellwill.org
-            </a>
-          </div>
-
-          {/* Dubai Office */}
-          <div className="mt-5">
-            <h4 className="text-sm font-semibold text-[#062a5e]">
-              Dubai Office
-            </h4>
-
-            <a
-              href={dubaiMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1 block text-sm leading-6 text-[#53677f] transition-colors hover:text-[#0866c5]"
-            >
-              B2B Office Tower, Office 2205,
-              Marasi Drive Street, Business Bay,
-              Dubai, UAE
-            </a>
-          </div>
-
-          {/* Pakistan Office */}
-          <div className="mt-4">
-            <h4 className="text-sm font-semibold text-[#062a5e]">
-              Pakistan Office
-            </h4>
-
-            <a
-              href={pakistanMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1 block text-sm leading-6 text-[#53677f] transition-colors hover:text-[#0866c5]"
-            >
-              Office No. 4087, 4th Floor,
-              World Trade Centre,
-              Islamabad, Pakistan
             </a>
           </div>
         </div>

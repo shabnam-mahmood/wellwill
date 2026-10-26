@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -5,14 +6,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-
-const mainLinks = [
-  { label: "Home", href: "/" },
-  
-  { label: "Projects", href: "/projects" },
-  { label: "Stories", href: "/stories" },
-  { label: "Contact", href: "/contact" },
-];
 
 const aboutLinks = [
   { label: "Our Story", href: "/about" },
@@ -26,15 +19,21 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
+  const [mobileAboutOpen, setMobileAboutOpen] =
+    useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 18);
+    const handleScroll = () =>
+      setScrolled(window.scrollY > 18);
 
     handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () =>
+      window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -44,7 +43,9 @@ export default function Header() {
   }, [pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    document.body.style.overflow = mobileOpen
+      ? "hidden"
+      : "";
 
     return () => {
       document.body.style.overflow = "";
@@ -52,10 +53,13 @@ export default function Header() {
   }, [mobileOpen]);
 
   const aboutActive =
-    pathname === "/about" || pathname === "/water" || pathname === "/impact";
+    pathname === "/about" ||
+    pathname === "/water" ||
+    pathname === "/impact";
 
   return (
     <>
+      {/* HEADER */}
       <header
         className={`fixed inset-x-0 top-0 z-[100] transition-all duration-500 ${
           scrolled
@@ -68,25 +72,30 @@ export default function Header() {
             scrolled ? "h-[72px]" : "h-[88px]"
           }`}
         >
-          <Link href="/" className="relative z-[110] shrink-0">
+          {/* LOGO */}
+          <Link
+            href="/"
+            className="relative z-[110] shrink-0"
+          >
             <div
-  className={`relative transition-all duration-500 ${
-    scrolled
-      ? "h-[58px] w-[190px]"
-      : "h-[70px] w-[220px]"
-  }`}
->
-  <Image
-    src="/images/wellwill-logo.png"
-    alt="WellWill"
-    fill
-    priority
-    className="object-contain object-left"
-    sizes="220px"
-  />
-</div>
+              className={`relative transition-all duration-500 ${
+                scrolled
+                  ? "h-[55px] w-[210px]"
+                  : "h-[65px] w-[245px]"
+              }`}
+            >
+              <Image
+                src="/images/wellwill--logo.png"
+                alt="WellWill"
+                fill
+                priority
+                sizes="315px"
+                className="object-contain object-left"
+              />
+            </div>
           </Link>
 
+          {/* DESKTOP NAVIGATION */}
           <nav className="hidden items-center gap-9 xl:flex">
             <NavLink
               href="/"
@@ -94,6 +103,7 @@ export default function Header() {
               active={pathname === "/"}
             />
 
+            {/* ABOUT US DROPDOWN */}
             <div
               className="relative"
               onMouseEnter={() => setAboutOpen(true)}
@@ -108,18 +118,21 @@ export default function Header() {
                 }`}
               >
                 About Us
+
                 <span
-  aria-hidden="true"
-  className={`inline-flex items-center justify-center text-[16px] leading-none transition-transform duration-300 ${
-    aboutOpen ? "rotate-180" : ""
-  }`}
->
-  ▾
-</span>
+                  aria-hidden="true"
+                  className={`inline-flex items-center justify-center text-[16px] leading-none transition-transform duration-300 ${
+                    aboutOpen ? "rotate-180" : ""
+                  }`}
+                >
+                  ▾
+                </span>
 
                 <span
                   className={`absolute bottom-[18px] left-0 h-[2px] rounded-full bg-[#15935e] transition-all duration-300 ${
-                    aboutActive ? "w-full" : "w-0 group-hover:w-full"
+                    aboutActive
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
                   }`}
                 />
               </Link>
@@ -127,9 +140,21 @@ export default function Header() {
               <AnimatePresence>
                 {aboutOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                    initial={{
+                      opacity: 0,
+                      y: 12,
+                      scale: 0.98,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      y: 8,
+                      scale: 0.98,
+                    }}
                     transition={{ duration: 0.2 }}
                     className="absolute left-1/2 top-[68px] w-[220px] -translate-x-1/2 overflow-hidden rounded-[18px] border border-[#dce7ef] bg-white/95 p-2 shadow-[0_18px_45px_rgba(6,42,94,0.14)] backdrop-blur-xl"
                   >
@@ -166,6 +191,7 @@ export default function Header() {
             />
           </nav>
 
+          {/* DESKTOP DONATE BUTTON */}
           <div className="hidden xl:block">
             <motion.div
               whileHover={{ y: -2 }}
@@ -175,46 +201,60 @@ export default function Header() {
                 href="/donate"
                 className="group relative flex min-w-[145px] items-center justify-center overflow-hidden rounded-full bg-[#0866c5] px-7 py-3.5 text-[14px] font-semibold text-white shadow-[0_8px_22px_rgba(8,102,197,0.20)] transition-all duration-300"
               >
-                {/* Water flows LEFT to RIGHT */}
+                {/* WATER FLOW ANIMATION */}
                 <span className="pointer-events-none absolute inset-y-0 -left-[130%] w-[130%] bg-[#1593d3] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:left-0">
                   <span className="absolute -right-7 top-[-25%] h-[150%] w-16 rounded-[50%] bg-[#1593d3]" />
                 </span>
 
-                {/* Moving reflection */}
+                {/* REFLECTION */}
                 <span className="pointer-events-none absolute inset-y-0 -left-[55%] w-[38%] skew-x-[-18deg] bg-white/20 opacity-0 transition-all delay-75 duration-700 group-hover:left-[120%] group-hover:opacity-100" />
 
-                <span className="relative z-10" style={{ color: "#ffffff" }}>
+                <span
+                  className="relative z-10"
+                  style={{ color: "#ffffff" }}
+                >
                   Donate Now
                 </span>
               </Link>
             </motion.div>
           </div>
 
+          {/* MOBILE MENU BUTTON */}
           <button
             type="button"
             aria-label="Toggle menu"
-            onClick={() => setMobileOpen((current) => !current)}
+            aria-expanded={mobileOpen}
+            onClick={() =>
+              setMobileOpen((current) => !current)
+            }
             className="relative z-[110] flex h-11 w-11 flex-col items-center justify-center gap-[5px] rounded-full border border-[#d8e5ee] bg-white/90 xl:hidden"
           >
             <span
               className={`h-[2px] w-5 rounded-full bg-[#062a5e] transition-all duration-300 ${
-                mobileOpen ? "translate-y-[7px] rotate-45" : ""
+                mobileOpen
+                  ? "translate-y-[7px] rotate-45"
+                  : ""
               }`}
             />
+
             <span
               className={`h-[2px] w-5 rounded-full bg-[#062a5e] transition-all duration-300 ${
                 mobileOpen ? "opacity-0" : ""
               }`}
             />
+
             <span
               className={`h-[2px] w-5 rounded-full bg-[#062a5e] transition-all duration-300 ${
-                mobileOpen ? "-translate-y-[7px] -rotate-45" : ""
+                mobileOpen
+                  ? "-translate-y-[7px] -rotate-45"
+                  : ""
               }`}
             />
           </button>
         </div>
       </header>
 
+      {/* MOBILE NAVIGATION */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -227,12 +267,15 @@ export default function Header() {
               <div className="mx-auto max-w-[600px]">
                 <MobileLink href="/" label="Home" />
 
+                {/* MOBILE ABOUT US */}
                 <div className="border-b border-[#dde8ef]">
                   <div className="flex items-center justify-between">
                     <Link
                       href="/about"
                       className={`flex-1 py-4 text-[18px] font-semibold tracking-[-0.01em] ${
-                        aboutActive ? "text-[#0866c5]" : "text-[#062a5e]"
+                        aboutActive
+                          ? "text-[#0866c5]"
+                          : "text-[#062a5e]"
                       }`}
                     >
                       About Us
@@ -241,14 +284,19 @@ export default function Header() {
                     <button
                       type="button"
                       onClick={() =>
-                        setMobileAboutOpen((current) => !current)
+                        setMobileAboutOpen(
+                          (current) => !current
+                        )
                       }
                       className="flex h-11 w-11 items-center justify-center text-lg text-[#062a5e]"
                       aria-label="Toggle About Us submenu"
+                      aria-expanded={mobileAboutOpen}
                     >
                       <span
                         className={`transition-transform duration-300 ${
-                          mobileAboutOpen ? "rotate-180" : ""
+                          mobileAboutOpen
+                            ? "rotate-180"
+                            : ""
                         }`}
                       >
                         ▾
@@ -259,9 +307,18 @@ export default function Header() {
                   <AnimatePresence initial={false}>
                     {mobileAboutOpen && (
                       <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
+                        initial={{
+                          height: 0,
+                          opacity: 0,
+                        }}
+                        animate={{
+                          height: "auto",
+                          opacity: 1,
+                        }}
+                        exit={{
+                          height: 0,
+                          opacity: 0,
+                        }}
                         className="overflow-hidden"
                       >
                         <div className="mb-4 rounded-[18px] bg-white p-2">
@@ -280,11 +337,26 @@ export default function Header() {
                   </AnimatePresence>
                 </div>
 
-                <MobileLink href="/projects" label="Projects" />
-                <MobileLink href="/stories" label="Stories" />
-                <MobileLink href="/contact" label="Contact" />
+                <MobileLink
+                  href="/projects"
+                  label="Projects"
+                />
 
-                <motion.div whileTap={{ scale: 0.98 }} className="mt-6 mb-8">
+                <MobileLink
+                  href="/stories"
+                  label="Stories"
+                />
+
+                <MobileLink
+                  href="/contact"
+                  label="Contact"
+                />
+
+                {/* MOBILE DONATE BUTTON */}
+                <motion.div
+                  whileTap={{ scale: 0.98 }}
+                  className="mb-8 mt-6"
+                >
                   <Link
                     href="/donate"
                     className="group relative flex w-full items-center justify-center overflow-hidden rounded-full bg-[#0866c5] px-7 py-4 text-[15px] font-semibold text-white shadow-[0_10px_28px_rgba(8,102,197,0.24)]"
@@ -303,7 +375,8 @@ export default function Header() {
                 </motion.div>
 
                 <p className="mt-6 text-center text-xs leading-5 text-[#7a8c9f]">
-                  Water is our beginning. Wellbeing is our mission.
+                  Water is our beginning. Wellbeing is
+                  our mission.
                 </p>
               </div>
             </div>
@@ -314,6 +387,7 @@ export default function Header() {
   );
 }
 
+/* DESKTOP NAV LINK */
 function NavLink({
   href,
   label,
@@ -336,13 +410,16 @@ function NavLink({
 
       <span
         className={`absolute bottom-[18px] left-0 h-[2px] rounded-full bg-[#15935e] transition-all duration-300 ${
-          active ? "w-full" : "w-0 group-hover:w-full"
+          active
+            ? "w-full"
+            : "w-0 group-hover:w-full"
         }`}
       />
     </Link>
   );
 }
 
+/* MOBILE NAV LINK */
 function MobileLink({
   href,
   label,
