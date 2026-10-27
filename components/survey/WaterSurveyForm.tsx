@@ -1,12 +1,19 @@
+
 "use client";
 
-import { FormEvent, useState } from "react";
+import {
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { motion } from "motion/react";
-import { CheckCircle2, Printer } from "lucide-react";
+import {
+  CheckCircle2,
+  Printer,
+} from "lucide-react";
 
 type SurveyData = {
-  formNo: string;
-  date: string;
   name: string;
   fatherName: string;
   community: string;
@@ -16,8 +23,6 @@ type SurveyData = {
 };
 
 const initialForm: SurveyData = {
-  formNo: "",
-  date: "",
   name: "",
   fatherName: "",
   community: "",
@@ -26,255 +31,486 @@ const initialForm: SurveyData = {
   phone: "",
 };
 
-function escapeHtml(value: string) {
+function todayLocal(): string {
+  const date = new Date();
+
+  const year = date.getFullYear();
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatDate(value: string): string {
+  if (!value) return "";
+
+  const date = new Date(
+    `${value}T00:00:00`
+  );
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+}
+
+function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function formatDate(value: string) {
-  if (!value) return "";
-  return new Intl.DateTimeFormat("en-GB").format(
-    new Date(`${value}T00:00:00`)
-  );
+    .replaceAll("'", "&#39;");
 }
 
 export default function WaterSurveyForm() {
-  const [form, setForm] = useState<SurveyData>(initialForm);
-  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] =
+    useState<SurveyData>(initialForm);
 
-  function updateField(field: keyof SurveyData, value: string) {
-    setForm((current) => ({ ...current, [field]: value }));
+  const [surveyDate, setSurveyDate] =
+    useState("");
+
+  const [projectNumber, setProjectNumber] =
+    useState("");
+
+  const [submitted, setSubmitted] =
+    useState(false);
+
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  const [submitError, setSubmitError] =
+    useState("");
+
+  const submissionIdRef =
+    useRef<string | null>(null);
+
+  useEffect(() => {
+    setSurveyDate(todayLocal());
+
+    submissionIdRef.current =
+      crypto.randomUUID();
+  }, []);
+
+  function updateField(
+    field: keyof SurveyData,
+    value: string
+  ) {
+    if (submitted || submitting) return;
+
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
-    setSubmitted(true);
 
-    window.setTimeout(() => {
-      document
-        .getElementById("survey-actions")
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 50);
+    if (submitting || submitted) return;
+
+    setSubmitting(true);
+    setSubmitError("");
+
+    try {
+      if (!submissionIdRef.current) {
+        submissionIdRef.current =
+          crypto.randomUUID();
+      }
+
+      const date = surveyDate || todayLocal();
+
+      const response = await fetch(
+        "/api/forms",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            formType: "water-support",
+            submissionId:
+              submissionIdRef.current,
+            date,
+            ...form,
+            website: "",
+          }),
+        }
+      );
+
+      const result: {
+        success?: boolean;
+        message?: string;
+        projectNumber?: string;
+        surveyDate?: string;
+      } = await response.json();
+
+      if (
+        !response.ok ||
+        result.success !== true
+      ) {
+        throw new Error(
+          result.message ||
+            "We couldn't confirm your submission."
+        );
+      }
+
+      if (
+        !result.projectNumber ||
+        !/^WW-PRJ-\d{3,}$/.test(
+          result.projectNumber
+        )
+      ) {
+        throw new Error(
+          "The survey was received, but the project number could not be confirmed. Please retry."
+        );
+      }
+
+      setProjectNumber(
+        result.projectNumber
+      );
+
+      setSurveyDate(
+        result.surveyDate || date
+      );
+
+      setSubmitted(true);
+
+      window.setTimeout(() => {
+        document
+          .getElementById(
+            "survey-actions"
+          )
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+      }, 100);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Unable to submit the survey. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function handlePrint() {
-    const printWindow = window.open("", "_blank", "width=900,height=1100");
-    if (!printWindow) return;
+    if (!submitted || !projectNumber) {
+      return;
+    }
 
-    const logoUrl = `${window.location.origin}/images/wellwill-logo.png`;
+    const printWindow = window.open(
+      "",
+      "_blank",
+      "width=900,height=1100"
+    );
+
+    if (!printWindow) {
+      window.alert(
+        "Please allow pop-ups to print or save the survey as a PDF."
+      );
+      return;
+    }
+
+    const logoUrl =
+      `${window.location.origin}/images/wellwill-logo.png`;
+
+    const rows = [
+      ["1. Name", "نام", form.name],
+      [
+        "2. Father's Name",
+        "والد کا نام",
+        form.fatherName,
+      ],
+      [
+        "3. Community / Tribe",
+        "قوم",
+        form.community,
+      ],
+      [
+        "4. Village / City",
+        "بستی / شہر",
+        form.village,
+      ],
+      [
+        "5. CNIC / ID Card No.",
+        "شناختی کارڈ نمبر",
+        form.idNumber,
+      ],
+      [
+        "6. Phone Number",
+        "فون نمبر",
+        form.phone,
+      ],
+    ];
+
+    const rowsHtml = rows
+      .map(
+        ([label, urdu, value]) => `
+          <div class="field-row">
+            <div class="field-label">
+              <span>${escapeHtml(label)}</span>
+              <span class="urdu" dir="rtl">
+                ${escapeHtml(urdu)}
+              </span>
+            </div>
+            <div class="field-value">
+              ${escapeHtml(value)}
+            </div>
+          </div>
+        `
+      )
+      .join("");
 
     const html = `
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>WellWill Water Survey</title>
+<meta charset="utf-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1">
+<title>
+${escapeHtml(projectNumber)} - WellWill Water Survey
+</title>
 <style>
-@page { size: A4; margin: 14mm; }
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #fff;
-  color: #24384d;
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-.sheet {
-  width: 100%;
-  max-width: 182mm;
-  margin: 0 auto;
-  border: 1px solid #d8e5ee;
-  border-radius: 10px;
-  overflow: hidden;
-}
-.topline { height: 7px; background: #0866c5; }
-.head {
-  padding: 20px 22px;
-  background: linear-gradient(90deg,#eff8ff,#f3fbf7);
-  border-bottom: 1px solid #dfeaf2;
-}
-.headrow {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  align-items: flex-start;
-}
-.logo {
-  max-width: 125px;
-  max-height: 52px;
-  object-fit: contain;
-  margin-bottom: 12px;
-}
-.eyebrow {
-  margin: 0 0 6px;
-  color: #0866c5;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1.8px;
-  text-transform: uppercase;
-}
-h1 {
-  margin: 0;
-  color: #062a5e;
-  font: 700 23px/1.15 Georgia, serif;
-}
-.sub {
-  margin: 7px 0 0;
-  color: #667b90;
-  font-size: 10px;
-}
-.meta {
-  min-width: 155px;
-  border: 1px solid #d3e2ec;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #fff;
-}
-.mrow {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  border-bottom: 1px solid #e0e9ef;
-}
-.mrow:last-child { border-bottom: 0; }
-.ml {
-  padding: 9px 8px;
-  background: #f6fafc;
-  color: #5b7086;
-  font-size: 9px;
-  font-weight: 700;
-}
-.mv {
-  padding: 9px 8px;
-  color: #062a5e;
-  font-size: 10px;
-  font-weight: 600;
-}
-.body { padding: 21px 22px 22px; }
-.stitle {
-  margin: 0 0 13px;
-  color: #15935e;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-}
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 11px;
-}
-.field {
-  border: 1px solid #dbe7ef;
-  border-radius: 8px;
-  overflow: hidden;
-  break-inside: avoid;
-}
-.fl {
-  padding: 7px 10px 6px;
-  background: #f7fafc;
-  color: #587087;
-  font-size: 9px;
-  font-weight: 700;
-}
-.fv {
-  min-height: 38px;
-  padding: 10px;
-  color: #183b5d;
-  font-size: 12px;
-  overflow-wrap: anywhere;
-}
-.note {
-  margin-top: 17px;
-  padding: 12px 14px;
-  border: 1px solid #d9e8f1;
-  border-radius: 8px;
-  background: #f7fbfe;
-}
-.note b {
-  color: #062a5e;
-  font-size: 10px;
-}
-.note ul {
-  margin: 7px 0 0;
-  padding-left: 16px;
-  color: #64798e;
-  font-size: 9px;
-  line-height: 1.6;
-}
-.foot {
-  margin-top: 20px;
-  padding-top: 11px;
-  border-top: 1px solid #e1e9ef;
-  display: flex;
-  justify-content: space-between;
-  color: #8292a1;
-  font-size: 8px;
-}
-@media print {
-  .sheet { border-radius: 0; }
-}
+  @page {
+    size: A4;
+    margin: 16mm;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: #fff;
+    color: #17344a;
+    font-family: Arial, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: auto;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #087ea4;
+  }
+
+  .logo {
+    width: 90px;
+    height: 80px;
+    object-fit: contain;
+  }
+
+  .brand {
+    font-size: 13px;
+    color: #1684a5;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: 23px;
+    line-height: 1.3;
+    margin: 7px 0;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    color: #5d7585;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 25px 0;
+  }
+
+  .meta-box {
+    border: 1px solid #cfe2ec;
+    background: #f4fafe;
+    padding: 13px 15px;
+    border-radius: 8px;
+  }
+
+  .meta-label {
+    color: #688194;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 7px;
+  }
+
+  .meta-value {
+    font-size: 17px;
+    font-weight: bold;
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #087ea4;
+    margin: 25px 0 14px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    border: 1px solid #dce8ef;
+    margin-bottom: -1px;
+    min-height: 57px;
+    break-inside: avoid;
+  }
+
+  .field-label {
+    background: #f6fafd;
+    padding: 12px 14px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-right: 1px solid #dce8ef;
+  }
+
+  .urdu {
+    color: #668297;
+    font-size: 13px;
+    font-weight: normal;
+  }
+
+  .field-value {
+    padding: 16px 14px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .note {
+    margin-top: 25px;
+    padding: 15px;
+    background: #f4fafe;
+    border-left: 3px solid #087ea4;
+    font-size: 11px;
+    line-height: 1.7;
+  }
+
+  .footer {
+    margin-top: 40px;
+    padding-top: 14px;
+    border-top: 1px solid #dce8ef;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #748a99;
+  }
+
+  @media print {
+    .page {
+      max-width: none;
+    }
+  }
 </style>
 </head>
+
 <body>
-<div class="sheet">
-  <div class="topline"></div>
-  <div class="head">
-    <div class="headrow">
-      <div>
-        <img class="logo" src="${logoUrl}" alt="WellWill" />
-        <p class="eyebrow">Field Survey</p>
-        <h1>Water Supply Project Survey Form</h1>
-        <p class="sub">منصوبہ آبی فراہمی · Survey Form Field Data Collection</p>
-      </div>
-      <div class="meta">
-        <div class="mrow"><div class="ml">Form No.</div><div class="mv">${escapeHtml(form.formNo)}</div></div>
-        <div class="mrow"><div class="ml">Date</div><div class="mv">${escapeHtml(formatDate(form.date))}</div></div>
+<div class="page">
+  <div class="header">
+    <img
+      class="logo"
+      src="${escapeHtml(logoUrl)}"
+      alt="WellWill"
+      onerror="this.style.display='none'"
+    >
+    <div>
+      <div class="brand">WellWill</div>
+      <h1>
+        Water Supply Project Survey Form
+      </h1>
+      <div class="subtitle">
+        Field Data Collection ·
+        منصوبہ آبی فراہمی
       </div>
     </div>
   </div>
 
-  <div class="body">
-    <p class="stitle">Respondent Information · معلومات جواب دہندہ</p>
-    <div class="grid">
-      <div class="field"><div class="fl">1. Name (نام)</div><div class="fv">${escapeHtml(form.name)}</div></div>
-      <div class="field"><div class="fl">2. Father's Name (نام والدین)</div><div class="fv">${escapeHtml(form.fatherName)}</div></div>
-      <div class="field"><div class="fl">3. Community / Tribe (قوم)</div><div class="fv">${escapeHtml(form.community)}</div></div>
-      <div class="field"><div class="fl">4. Village / City (بستی / شہر)</div><div class="fv">${escapeHtml(form.village)}</div></div>
-      <div class="field"><div class="fl">5. CNIC / ID Card No. (شناختی کارڈ نمبر)</div><div class="fv">${escapeHtml(form.idNumber)}</div></div>
-      <div class="field"><div class="fl">6. Phone Number (فون نمبر)</div><div class="fv">${escapeHtml(form.phone)}</div></div>
+  <div class="meta">
+    <div class="meta-box">
+      <div class="meta-label">
+        Project / Form Number
+      </div>
+      <div class="meta-value">
+        ${escapeHtml(projectNumber)}
+      </div>
     </div>
 
-    <div class="note">
-      <b>Important Note</b>
-      <ul>
-        <li>Information collected will be used only for the Water Supply Project survey.</li>
-        <li>Please ensure that all details are accurate and complete.</li>
-        <li>The respondent or surveyor should complete the form at the time of survey.</li>
-      </ul>
+    <div class="meta-box">
+      <div class="meta-label">
+        Survey Date
+      </div>
+      <div class="meta-value">
+        ${escapeHtml(formatDate(surveyDate))}
+      </div>
     </div>
+  </div>
 
-    <div class="foot">
-      <span>WellWill · Water Supply Project</span>
-      <span>Water is our beginning. Wellbeing is our mission.</span>
-    </div>
+  <div class="section-title">
+    Respondent Information ·
+    معلومات جواب دہندہ
+  </div>
+
+  ${rowsHtml}
+
+  <div class="note">
+    <strong>Important Note:</strong>
+    Information provided in this survey
+    is collected for WellWill's Water
+    Supply Project assessment.
+    Submission does not guarantee
+    project approval or installation.
+  </div>
+
+  <div class="footer">
+    <span>WellWill · Water Supply Initiative</span>
+    <span>${escapeHtml(projectNumber)}</span>
   </div>
 </div>
 
 <script>
-window.addEventListener("load", function () {
-  setTimeout(function () {
-    window.focus();
-    window.print();
-  }, 350);
-});
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      window.print();
+    }, 350);
+  });
 </script>
 </body>
-</html>`;
+</html>
+`;
 
     printWindow.document.open();
     printWindow.document.write(html);
@@ -285,56 +521,79 @@ window.addEventListener("load", function () {
     <section className="bg-[#f5faff] py-14 sm:py-18 lg:py-20">
       <div className="mx-auto max-w-[1000px] px-5 sm:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65 }}
-          className="overflow-hidden rounded-[26px] border border-[#dbe9f2] bg-white shadow-[0_16px_50px_rgba(6,42,94,0.07)]"
+          initial={{
+            opacity: 0,
+            y: 24,
+          }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+          }}
+          transition={{
+            duration: 0.5,
+          }}
+          className="overflow-hidden rounded-[24px] border border-[#dceaf3] bg-white shadow-[0_18px_65px_rgba(13,70,110,0.08)]"
         >
-          <div className="border-b border-[#e1ebf2] bg-gradient-to-r from-[#eef8ff] to-[#f3fbf7] px-6 py-7 sm:px-9">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          <div className="border-b border-[#dceaf3] bg-gradient-to-r from-[#f0faff] to-white px-6 py-7 sm:px-9">
+            <div className="flex flex-col justify-between gap-7 md:flex-row md:items-end">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.27em] text-[#0866c5]">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#0a83ad]">
                   Field Survey
                 </p>
-                <h1 className="mt-2 font-serif text-[30px] font-semibold text-[#062a5e] sm:text-[36px]">
+
+                <h1 className="text-2xl font-bold leading-tight text-[#17344a] sm:text-3xl">
                   Water Supply Project Survey Form
                 </h1>
-                <p className="mt-2 text-sm text-[#53677f]">
-                  منصوبہ آبی فراہمی · Survey Form : Field Data Collection
+
+                <p className="mt-3 text-sm text-[#678094]">
+                  منصوبہ آبی فراہمی · Survey Form :
+                  Field Data Collection
                 </p>
               </div>
 
-              <div className="grid w-full max-w-[300px] grid-cols-2 gap-3">
-                <label className="text-xs font-semibold text-[#53677f]">
-                  Form No. *
+              <div className="grid w-full max-w-[320px] grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold text-[#36566a]">
+                    Form No.
+                  </span>
+
                   <input
-                    required
-                    placeholder="e.g. WW-001"
-                    value={form.formNo}
-                    disabled={submitted}
-                    onChange={(e) => updateField("formNo", e.target.value)}
-                    className="mt-2 w-full rounded-xl border border-[#d9e6ef] bg-white px-3 py-2.5 font-normal text-[#062a5e] outline-none transition placeholder:text-[#9aabba] focus:border-[#0866c5] disabled:bg-[#f6f9fb]"
+                    type="text"
+                    readOnly
+                    value={
+                      projectNumber ||
+                      "Assigned on submission"
+                    }
+                    className="w-full rounded-xl border border-[#d7e5ee] bg-[#f3f8fb] px-3 py-3 text-xs font-semibold text-[#17344a] outline-none sm:text-sm"
                   />
                 </label>
 
-                <label className="text-xs font-semibold text-[#53677f]">
-                  Date *
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold text-[#36566a]">
+                    Date
+                  </span>
+
                   <input
                     type="date"
-                    required
-                    disabled={submitted}
-                    value={form.date}
-                    onChange={(e) => updateField("date", e.target.value)}
-                    className="mt-2 w-full rounded-xl border border-[#d9e6ef] bg-white px-3 py-2.5 font-normal text-[#062a5e] outline-none transition focus:border-[#0866c5] disabled:bg-[#f6f9fb]"
+                    readOnly
+                    value={surveyDate}
+                    className="w-full rounded-xl border border-[#d7e5ee] bg-[#f3f8fb] px-3 py-3 text-sm font-semibold text-[#17344a] outline-none"
                   />
                 </label>
               </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="px-6 py-8 sm:px-9 sm:py-10">
-            <p className="mb-7 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#15935e]">
-              Respondent Information · معلومات جواب دہندہ
+          <form
+            onSubmit={handleSubmit}
+            className="px-6 py-8 sm:px-9 sm:py-10"
+          >
+            <p className="mb-6 text-sm font-bold text-[#087ea4]">
+              Respondent Information ·
+              معلومات جواب دہندہ
             </p>
 
             <div className="grid gap-5 sm:grid-cols-2">
@@ -342,96 +601,156 @@ window.addEventListener("load", function () {
                 label="1. Name (نام)"
                 placeholder="Enter full name"
                 required
-                disabled={submitted}
+                disabled={submitted || submitting}
                 value={form.name}
-                onChange={(v) => updateField("name", v)}
+                onChange={(value) =>
+                  updateField("name", value)
+                }
               />
 
               <Field
-                label="2. Father's Name (نام والدین)"
+                label="2. Father's Name (والد کا نام)"
                 placeholder="Enter father's name"
                 required
-                disabled={submitted}
+                disabled={submitted || submitting}
                 value={form.fatherName}
-                onChange={(v) => updateField("fatherName", v)}
+                onChange={(value) =>
+                  updateField("fatherName", value)
+                }
               />
 
               <Field
                 label="3. Community / Tribe (قوم)"
                 placeholder="Enter community or tribe"
                 required
-                disabled={submitted}
+                disabled={submitted || submitting}
                 value={form.community}
-                onChange={(v) => updateField("community", v)}
+                onChange={(value) =>
+                  updateField("community", value)
+                }
               />
 
               <Field
                 label="4. Village / City (بستی / شہر)"
                 placeholder="Enter village or city"
                 required
-                disabled={submitted}
+                disabled={submitted || submitting}
                 value={form.village}
-                onChange={(v) => updateField("village", v)}
+                onChange={(value) =>
+                  updateField("village", value)
+                }
               />
 
               <Field
                 label="5. CNIC / ID Card No. (شناختی کارڈ نمبر)"
-                placeholder="Enter CNIC / ID card number"
+                placeholder="Enter CNIC / ID number"
                 required
-                disabled={submitted}
+                disabled={submitted || submitting}
                 value={form.idNumber}
-                onChange={(v) => updateField("idNumber", v)}
+                onChange={(value) =>
+                  updateField("idNumber", value)
+                }
               />
 
               <Field
                 label="6. Phone Number (فون نمبر)"
-                placeholder="e.g. +92 300 1234567"
+                placeholder="Enter phone number"
                 type="tel"
                 required
-                disabled={submitted}
+                disabled={submitted || submitting}
                 value={form.phone}
-                onChange={(v) => updateField("phone", v)}
+                onChange={(value) =>
+                  updateField("phone", value)
+                }
               />
             </div>
 
             <div className="mt-8 rounded-[18px] border border-[#dceaf3] bg-[#f7fbfe] p-5">
-              <p className="text-sm font-semibold text-[#062a5e]">Important Note</p>
-              <ul className="mt-3 space-y-2 text-xs leading-5 text-[#60758d]">
-                <li>• Information collected will be used only for the Water Supply Project survey.</li>
-                <li>• Please ensure that all details are accurate and complete.</li>
-                <li>• The respondent or surveyor should complete the form at the time of survey.</li>
+              <p className="mb-3 text-sm font-bold text-[#17344a]">
+                Important Note
+              </p>
+
+              <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-[#668094]">
+                <li>
+                  Information collected will be
+                  used for the Water Supply
+                  Project survey and assessment.
+                </li>
+                <li>
+                  Submission does not guarantee
+                  approval or installation of a
+                  water project.
+                </li>
+                <li>
+                  Your CNIC / ID number will be
+                  stored in the restricted survey
+                  records and will not be included
+                  in notification emails.
+                </li>
               </ul>
             </div>
 
             {!submitted ? (
               <div className="mt-9">
+                {submitError && (
+                  <div
+                    role="alert"
+                    className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                  >
+                    {submitError}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="rounded-full bg-[#0866c5] px-8 py-4 text-sm font-semibold text-white transition hover:bg-[#0759ac]"
+                  disabled={
+                    submitting ||
+                    !surveyDate
+                  }
+                  className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#087ea4] px-8 py-3 text-sm font-bold text-white transition hover:bg-[#086887] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Submit Survey
+                  {submitting
+                    ? "Submitting..."
+                    : "Submit Survey"}
                 </button>
               </div>
             ) : (
               <motion.div
                 id="survey-actions"
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-9"
+                initial={{
+                  opacity: 0,
+                  y: 12,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                className="mt-9 rounded-[18px] border border-[#ccebdc] bg-[#f1fbf5] p-5"
               >
-                <div className="mb-5 flex items-start gap-3 rounded-[18px] border border-[#ccebdc] bg-[#f1fbf6] p-4">
-                  <CheckCircle2 className="mt-0.5 shrink-0 text-[#15935e]" size={22} />
-                  <p className="text-sm leading-6 text-[#40566f]">
-                    Survey submitted successfully.
-                  </p>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-[#15915a]" />
+
+                  <div>
+                    <p className="font-bold text-[#17623f]">
+                      Survey submitted successfully.
+                    </p>
+
+                    <p className="mt-1 text-sm text-[#39765a]">
+                      Your project reference number is{" "}
+                      <strong>
+                        {projectNumber}
+                      </strong>
+                      .
+                    </p>
+                  </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="inline-flex items-center justify-center gap-3 rounded-full bg-[#0866c5] px-8 py-4 text-sm font-semibold text-white transition hover:bg-[#0759ac]"
+                  className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#087ea4] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#086887]"
                 >
-                  <Printer size={17} />
+                  <Printer className="h-4 w-4" />
                   Print / Save PDF
                 </button>
               </motion.div>
@@ -463,17 +782,22 @@ function Field({
   onChange,
 }: FieldProps) {
   return (
-    <label className="text-sm font-medium text-[#314963]">
-      {label}
-      {required ? " *" : ""}
+    <label className="block">
+      <span className="mb-2 block text-sm font-semibold text-[#36566a]">
+        {label}
+        {required ? " *" : ""}
+      </span>
+
       <input
         type={type}
+        value={value}
+        placeholder={placeholder}
         required={required}
         disabled={disabled}
-        placeholder={placeholder}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="mt-2 w-full rounded-xl border border-[#d9e6ef] px-4 py-3 text-sm text-[#062a5e] outline-none transition placeholder:text-[#9aabba] focus:border-[#0866c5] focus:ring-2 focus:ring-[#0866c5]/10 disabled:bg-[#f6f9fb]"
+        onChange={(event) =>
+          onChange(event.target.value)
+        }
+        className="w-full rounded-xl border border-[#d7e5ee] bg-white px-4 py-3 text-sm text-[#17344a] outline-none transition placeholder:text-[#9aafbc] focus:border-[#0a83ad] focus:ring-2 focus:ring-[#0a83ad]/10 disabled:bg-[#f3f8fb]"
       />
     </label>
   );
