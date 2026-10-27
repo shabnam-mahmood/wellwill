@@ -143,12 +143,14 @@ function validate(
     const subject = field(data, "subject", 30);
     const message = field(data, "message", 5000);
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      throw new FormError(
-        400,
-        "Please enter a valid email address."
-      );
-    }
+    
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  throw new FormError(
+    400,
+    "Please enter a valid email address."
+  );
+}
+
 
     if (
       ![

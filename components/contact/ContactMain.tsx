@@ -19,7 +19,7 @@ export default function ContactMain() {
   
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-alert("WellWill Contact Form JavaScript is working");
+alert("Form submission started");
     if (pending.current) return;
 
     const form = event.currentTarget;
@@ -30,6 +30,7 @@ alert("WellWill Contact Form JavaScript is working");
     setFeedback("");
 
     try {
+      console.log("WellWill: sending request to /api/forms");
       const response = await fetch("/api/forms", {
         method: "POST",
         headers: {
