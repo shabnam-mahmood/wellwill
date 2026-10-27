@@ -1,6 +1,6 @@
-
 "use client";
 
+import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import {
@@ -12,6 +12,71 @@ import {
 } from "lucide-react";
 
 export default function ContactMain() {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const pending = useRef(false);
+  const [feedback, setFeedback] = useState("");
+
+  
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+alert("WellWill Contact Form JavaScript is working");
+    if (pending.current) return;
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    pending.current = true;
+    setStatus("loading");
+    setFeedback("");
+
+    try {
+      const response = await fetch("/api/forms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formType: "contact",
+          firstName: data.get("firstName"),
+          lastName: data.get("lastName"),
+          email: data.get("email"),
+          subject: data.get("subject"),
+          message: data.get("message"),
+          website: data.get("website") ?? "",
+        }),
+        signal: AbortSignal.timeout(25000),
+      });
+
+      const result: {
+        success?: boolean;
+        message?: string;
+      } = await response.json();
+
+      if (!response.ok || result.success !== true) {
+        throw new Error(
+          result.message ||
+            `Submission failed (HTTP ${response.status}).`
+        );
+      }
+
+      form.reset();
+      setStatus("success");
+      setFeedback(
+        "Thank you! Your message has been sent successfully."
+      );
+    } catch (error) {
+      setStatus("error");
+      setFeedback(
+        error instanceof Error
+          ? error.message
+          : "Unable to send your message. Please try again."
+      );
+    } finally {
+      pending.current = false;
+    }
+  }
+
+
   return (
     <section className="bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto grid max-w-[1440px] items-stretch gap-8 px-6 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8 lg:px-16">
@@ -39,8 +104,10 @@ export default function ContactMain() {
             Fill in the form below and our team will get back to you.
           </p>
 
-          <form className="mt-8 grid gap-5 sm:grid-cols-2">
+          <form onSubmit={handleSubmit} aria-busy={status === "loading"} className="mt-8 grid gap-5 sm:grid-cols-2">
             <Field
+              name="firstName"
+              maxLength={80}
               label="First Name"
               required
               placeholder="Enter first name"
@@ -48,6 +115,8 @@ export default function ContactMain() {
             />
 
             <Field
+              name="lastName"
+              maxLength={80}
               label="Last Name"
               required
               placeholder="Enter last name"
@@ -55,6 +124,8 @@ export default function ContactMain() {
             />
 
             <Field
+              name="email"
+              maxLength={254}
               label="Email Address"
               required
               placeholder="you@example.com"
@@ -67,6 +138,7 @@ export default function ContactMain() {
               </span>
 
               <select
+                name="subject"
                 required
                 defaultValue=""
                 className="h-[58px] w-full rounded-[15px] border border-[#cbdce8] bg-white px-4 text-sm text-[#40566f] outline-none transition focus:border-[#0866c5] focus:ring-2 focus:ring-[#0866c5]/10"
@@ -88,6 +160,8 @@ export default function ContactMain() {
               </span>
 
               <textarea
+                name="message"
+                maxLength={5000}
                 required
                 rows={7}
                 placeholder="How can we help?"
@@ -95,19 +169,24 @@ export default function ContactMain() {
               />
             </label>
 
+            <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+              <label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label>
+            </div>
             <div className="sm:col-span-2">
               <motion.button
                 type="submit"
+                disabled={status === "loading"}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 className="group inline-flex min-h-[52px] items-center justify-center gap-4 rounded-full bg-[#15935e] px-8 py-3.5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(21,147,94,0.18)] transition-colors hover:bg-[#117c50]"
               >
-                Send Message
+                {status === "loading" ? "Sending…" : "Send Message"}
                 <ArrowRight
                   size={17}
                   className="transition-transform duration-300 group-hover:translate-x-1"
                 />
               </motion.button>
+              {feedback && <p role={status === "error" ? "alert" : "status"} className="mt-4 text-sm text-[#173a5e]">{feedback}</p>}
             </div>
           </form>
         </motion.div>
@@ -208,11 +287,15 @@ export default function ContactMain() {
 }
 
 function Field({
+  name,
+  maxLength,
   label,
   placeholder,
   type,
   required = false,
 }: {
+  name: string;
+  maxLength: number;
   label: string;
   placeholder: string;
   type: string;
@@ -228,6 +311,8 @@ function Field({
       </span>
 
       <input
+        name={name}
+        maxLength={maxLength}
         type={type}
         required={required}
         placeholder={placeholder}
@@ -256,3 +341,4 @@ function InfoCard({
     </div>
   );
 }
+

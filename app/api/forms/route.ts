@@ -361,18 +361,23 @@ export async function POST(request: Request) {
   try {
     const origin = request.headers.get("origin");
 
-    if (
-      (origin &&
-        origin !== new URL(request.url).origin) ||
-      request.headers.get("sec-fetch-site") ===
-        "cross-site"
-    ) {
-      return reply(
-        403,
-        false,
-        "Request not allowed."
-      );
-    }
+
+const allowedOrigins = new Set([
+  "https://wellwill.org",
+  "https://www.wellwill.org",
+  "http://localhost:3000",
+]);
+
+if (
+  (origin && !allowedOrigins.has(origin)) ||
+  request.headers.get("sec-fetch-site") === "cross-site"
+) {
+  return reply(
+    403,
+    false,
+    "Request not allowed."
+  );
+}
 
     const contentType = request.headers
       .get("content-type")
